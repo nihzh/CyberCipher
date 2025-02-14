@@ -4,8 +4,10 @@ Create: 12/17/2024
 Description: According to the book *Cryptography: Theory and Practice*, 
              some important value for cryptanalysis are assembled in fixed value in python's type
 '''
-
+# import regular expression for digrams and trigrams matching
 import re
+# defaultdict for creating dict of list
+from collections import defaultdict
 
 # Probabilities of occurrence of the 26 letters
 LETTER_PROB = {
@@ -29,15 +31,19 @@ TRIGRAMS = ('THE', 'ING', 'AND', 'HER', 'ERE', 'ENT',
 
 
 # recieve a string, return a dict that indicates frequency of occurrence of each letter 
-def getLetterOccDict(plainText):
+def getLetterOccDict(text):
     # check for empty string
-    if len(plainText) == 0:
+    if len(text) == 0:
         return dict()
     
     letterOccDict = {}
 
     # check each letter in the string
-    for eachLetter in plainText:
+    for eachLetter in text:
+        # only process alpha letters
+        if not eachLetter.isalpha() and isinstance(eachLetter, str) and len(eachLetter) == 1:
+            continue
+        # set uppercase for counting
         eachLetter = eachLetter.upper()
         # not existed in dict, create
         if letterOccDict.get(eachLetter) == None:
@@ -46,9 +52,21 @@ def getLetterOccDict(plainText):
         letterOccDict[eachLetter] += 1
 
     # rank by frequency
-    rankedLetterOcc = sorted(letterOccDict.items(), key=lambda x:x[1], reverse = True)
+    # rankedLetterOcc = sorted(letterOccDict.items(), key=lambda x:x[1], reverse = True)
 
     return letterOccDict
+
+# return a list of tuple (int, list) which are a list of letters and corresponding occourance times in given text
+def getGroupedRankedOccList(text):
+    letterOcc = getLetterOccDict(text)
+    # grouping by value (occourance times)
+    groupedList = defaultdict(list)
+    for letter, occ in letterOcc.items():
+        groupedList[occ].append(letter)
+    # rank the list
+    sortedGroups = sorted(groupedList.items(), key=lambda x: x[0], reverse=True)
+    return sortedGroups
+
 
 # return popular digrams related to the given letter, including x- and -x
 def getLetterDigrams(targetLetter):
@@ -58,59 +76,78 @@ def getLetterDigrams(targetLetter):
 def getLetterTrigrams(targetLetter):
     return [eachTrigram for eachTrigram in TRIGRAMS if targetLetter.upper() in eachTrigram]
 
+# TODO：应该修改为：在明文中取所有符合DIGRAMS列表的组合并计数
 # find and compute digrams of a single letter in a piece of text
 # input: a target letter and a piece of text
 # output: all digrams related to the target letter, inlcuding -x and x-
-def getLetterDigramsOccInTextDict(targetLetter, plainText):
-    # target dict
-    digramsOccDict = dict()
+# def getLetterDigramsOccInTextDict(targetLetter, plainText):
+#     # target dict
+#     digramsOccDict = dict()
 
-    # the analyse is not case sensitive, set to upper case for compaire
-    plainText = plainText.upper()
-    targetLetter = targetLetter.upper()
+#     # the analyse is not case sensitive, set to upper case for compaire
+#     plainText = plainText.upper()
+#     targetLetter = targetLetter.upper()
     
-    # pattern for -x and x-
-    pattern_X = fr"[a-zA-Z][{targetLetter}]"
-    patternX_ = fr"[{targetLetter}][a-zA-Z]" # {targetLetter.upper()}
-    # two matching results in the plain text
-    matches_X = re.findall(pattern_X, plainText)# flags = re.IGNORECASE
-    matchesX_ = re.findall(patternX_, plainText)
+#     # pattern for -x and x-
+#     pattern_X = fr"[a-zA-Z][{targetLetter}]"
+#     patternX_ = fr"[{targetLetter}][a-zA-Z]" # {targetLetter.upper()}
+#     # two matching results in the plain text
+#     matches_X = re.findall(pattern_X, plainText)# flags = re.IGNORECASE
+#     matchesX_ = re.findall(patternX_, plainText)
 
-    # combine two answers and calculate occurrence
-    for eachDigram in matches_X + matchesX_:
-        # count times for each isolate digram
-        if digramsOccDict.get(eachDigram) == None:
-            digramsOccDict[eachDigram] = 0
-        digramsOccDict[eachDigram] += 1
+#     # combine two answers and calculate occurrence
+#     for eachDigram in matches_X + matchesX_:
+#         # count times for each isolate digram
+#         if digramsOccDict.get(eachDigram) == None:
+#             digramsOccDict[eachDigram] = 0
+#         digramsOccDict[eachDigram] += 1
 
-    return digramsOccDict
+#     return digramsOccDict
 
-
-# find and compute digrams of a single letter in a piece of text
+# TODO：应该修改为：在明文中取所有符合TRIGRAMS列表的组合并计数
+# find and compute trigrams of a single letter in a piece of text
 # input: a target letter and a piece of text
-# output: all digrams related to the target letter, inlcuding -x and x-
-def getLetterTrigramsOccInTextDict(targetLetter, plainText):
-    # target dict
-    trigramsOccDict = dict()
+# output: all trigrams related to the target letter, inlcuding --x, -x- and x--
+# def getLetterTrigramsOccInTextDict(targetLetter, plainText):
+#     # target dict
+#     trigramsOccDict = dict()
 
-    # the analyse is not case sensitive, set to upper case for compaire
-    plainText = plainText.upper()
-    targetLetter = targetLetter.upper()
+#     # the analyse is not case sensitive, set to upper case for compaire
+#     plainText = plainText.upper()
+#     targetLetter = targetLetter.upper()
     
-    # pattern for -x and x-
-    patternX__ = fr"[{targetLetter}][a-zA-Z][a-zA-Z]"
-    pattern_X_ = fr"[a-zA-Z][{targetLetter}][a-zA-Z]"
-    pattern__X = fr"[a-zA-Z][a-zA-Z][{targetLetter}]" # {targetLetter.upper()}
-    # two matching results in the plain text
-    matchesX__ = re.findall(patternX__, plainText)# flags = re.IGNORECASE
-    matches_X_ = re.findall(pattern_X_, plainText)
-    matches__X = re.findall(pattern__X, plainText)
+#     # pattern for -x and x-
+#     patternX__ = fr"[{targetLetter}][a-zA-Z][a-zA-Z]"
+#     pattern_X_ = fr"[a-zA-Z][{targetLetter}][a-zA-Z]"
+#     pattern__X = fr"[a-zA-Z][a-zA-Z][{targetLetter}]" # {targetLetter.upper()}
+#     # two matching results in the plain text
+#     matchesX__ = re.findall(patternX__, plainText)# flags = re.IGNORECASE
+#     matches_X_ = re.findall(pattern_X_, plainText)
+#     matches__X = re.findall(pattern__X, plainText)
 
-    # combine two answers and calculate occurrence
-    for eachTrigram in matchesX__ + matches_X_ + matches__X:
-        # count times for each isolate digram
-        if trigramsOccDict.get(eachTrigram) == None:
-            trigramsOccDict[eachTrigram] = 0
-        trigramsOccDict[eachTrigram] += 1
+#     # combine two answers and calculate occurrence
+#     for eachTrigram in matchesX__ + matches_X_ + matches__X:
+#         # count times for each isolate digram
+#         if trigramsOccDict.get(eachTrigram) == None:
+#             trigramsOccDict[eachTrigram] = 0
+#         trigramsOccDict[eachTrigram] += 1
 
-    return trigramsOccDict
+#     return trigramsOccDict
+
+# in a plaintext count the number of digrams matching in DIGRAMS list
+# return: a integer of count number
+def getDigramsInTextCount(plainText):
+    digramsCount = 0
+    upperPlain = plainText.upper()
+    for eachDigram in DIGRAMS:
+        digramsCount += len(re.findall(f"(?={eachDigram})", upperPlain))
+    return digramsCount
+
+# in a plaintext count the number of trigrams matching in TRIGRAMS list
+# return: a integer of count number
+def getTrigramsInTextCount(plainText):
+    trigramsCount = 0
+    upperPlain = plainText.upper()
+    for eachTrigram in TRIGRAMS:
+        trigramsCount += len(re.findall(f"(?={eachTrigram})", upperPlain))
+    return trigramsCount

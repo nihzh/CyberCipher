@@ -6,7 +6,7 @@ Description: Encryption, decryption and cryptanalysis function of shift cipher
 import cryptanalysis as ca
 
 # shift cipher: encrypt by key
-def enc(plainText, key):
+def shiftEnc(plainText, key):
     cipherText = ""
     for eachChar in plainText:
         if eachChar.isupper():
@@ -21,7 +21,7 @@ def enc(plainText, key):
     return cipherText
 
 # shift cipher: decrypt by key
-def dec(cipherText, key):
+def shiftDec(cipherText, key):
     plainText = ""
     for eachChar in cipherText:
         if eachChar.isupper():
@@ -36,16 +36,33 @@ def dec(cipherText, key):
     return plainText
 
 
-text = """FMXVEYIFQFMZRWQFYVECFMDZPCVMRZWNMDZVEJBTXCDDUMJ
-NDIFEFMDZCDMQZKCEYFCJMYRNCWJCSZREXCHZUNMXZ
-NZUCDRJXYYSMRTMEYIFZWDYVZVYFZUMRZCRWNZDZJJ
-XZWGCHSMRNMDHNCMFQCHZJMXJZWIEJYUCFWDJNZDIRDKaXMFERBNDKRXRSREXmORUDSDKDVSHVUFEDKAPRkXDLYEVLRHHRH"""
-
-def shiftAnalysis(plainText):
-    letterOcc = ca.getLetterOccDict(plainText)
-    rankedLetterOcc = sorted(letterOcc.items(), key = lambda item:item[1], reverse = True)
+# 取所有字母出现次数，算差值得明文，匹配digram trigram
+def shiftAnalysis(cipherText):
+    # letterOcc = ca.getLetterOccDict(cipherText)
+    # rankedLetterOccList = sorted(letterOcc.items(), key = lambda item:item[1], reverse = True)
     
-    
-    return rankedLetterOcc
+    # get occourance list of letters in ciphertext, grouping as occourance times
+    letterOccList = ca.getGroupedRankedOccList(cipherText)
 
-print(shiftAnalysis(text))
+    # a dict that record keys and matching digrams and trigrams
+    keyMatching = {}
+    plainTexts = []
+
+    # get first 3 occourence letter group, try 'E'
+    mostOcc3 = letterOccList[0][1] + letterOccList[1][1]+letterOccList[2][1]
+    for eachLetter in mostOcc3:
+        key = (ord(eachLetter) - ord('E'))
+        # get a attempted plain text
+        tempPlain = shiftDec(cipherText, key)
+        digramsCount = ca.getDigramsInTextCount(tempPlain)
+        trigramsCount = ca.getTrigramsInTextCount(tempPlain)
+        # store the key and matching counts
+        keyMatching[key] = digramsCount + trigramsCount
+
+    maxMatching = max(keyMatching.values())
+    # there may have multiple keys which have same digrams and trigrams matching
+    maxMatchingDicts = {k: v for k, v in keyMatching.items() if v == maxMatching}
+    for eachKey in maxMatchingDicts.keys():
+        plainTexts.append(shiftDec(cipherText, eachKey))
+
+    return plainTexts
