@@ -37,4 +37,4 @@ PEEWEVKAKOEWADREMXMTBHHCHRTKDNVRZCHRCLQOHP
 WQAIIWXNRMGWOIIFKEE"""
 # print(sum(v**2 for v in ca.LETTER_PROB.values()))
 
-print(vigAnalysis(booktext))
+print(vigAnalysis(testtext))
