@@ -3,6 +3,7 @@ File Name: shiftCipher.py
 Create: 12/17/2024
 Description: Encryption, decryption and cryptanalysis function of shift cipher
 '''
+# import cryptanalysis util file
 import cryptanalysis as ca
 
 # shift cipher: encrypt by key
@@ -11,10 +12,10 @@ def shiftEnc(plainText, key):
     for eachChar in plainText:
         if eachChar.isupper():
             # minus 65 (charactor A), calculate value and plus 65
-            cipherText += chr((ord(eachChar) - 65 + key) % 26 + 65)
+            cipherText += chr((ord(eachChar) - ca.ASCII_UPPER_A + key) % 26 + ca.ASCII_UPPER_A)
         elif eachChar.islower():
             # minus 97 (charactor a), calculate value and plus 97
-            cipherText += chr((ord(eachChar) - 97 + key) % 26 + 97)
+            cipherText += chr((ord(eachChar) - ca.ASCII_LOWER_A + key) % 26 + ca.ASCII_LOWER_A)
         else:
             # not alpha, copy the origin
             cipherText += eachChar
@@ -26,10 +27,10 @@ def shiftDec(cipherText, key):
     for eachChar in cipherText:
         if eachChar.isupper():
             # minus 65 (charactor A), calculate value and plus 65
-            plainText += chr((ord(eachChar) - 65 - key) % 26 + 65)
+            plainText += chr((ord(eachChar) - ca.ASCII_UPPER_A - key) % 26 + ca.ASCII_UPPER_A)
         elif eachChar.islower():
             # minus 97 (charactor a), calculate value and plus 97
-            plainText += chr((ord(eachChar) - 97 - key) % 26 + 97)
+            plainText += chr((ord(eachChar) - ca.ASCII_LOWER_A - key) % 26 + ca.ASCII_LOWER_A)
         else:
             # not alpha, copy the origin
             plainText += eachChar

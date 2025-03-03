@@ -29,6 +29,14 @@ DIGRAMS = ('TH', 'HE', 'IN', 'ER', 'AN', 'RE', 'ED', 'ON', 'ES', 'ST',
 TRIGRAMS = ('THE', 'ING', 'AND', 'HER', 'ERE', 'ENT', 
             'THA', 'NTH', 'WAS', 'ETH', 'FOR', 'DTH')
 
+INDEX_OF_COINCIDENCE = 1.73
+IDEAL_PROB_DISTRIBUTION = 0.065
+
+ASCII_UPPER_A = 65
+ASCII_UPPER_Z = 90
+ASCII_LOWER_A = 97
+ASCII_LOWER_Z = 122
+
 
 # recieve a string, return a dict that indicates frequency of occurrence of each letter 
 def getLetterOccDict(text):
@@ -151,3 +159,11 @@ def getTrigramsInTextCount(plainText):
     for eachTrigram in TRIGRAMS:
         trigramsCount += len(re.findall(f"(?={eachTrigram})", upperPlain))
     return trigramsCount
+
+# input a string, return a list of numeral equivalents
+def getNumeralEqus(keyword):
+    return [ord(char) - ASCII_UPPER_A for char in keyword.upper() if 'A' <= char <= 'Z']
+
+# input a string, return a list of letter equivalents
+def getLetterEqus(keyword):
+    return [chr(num + ASCII_UPPER_A) for num in keyword]
