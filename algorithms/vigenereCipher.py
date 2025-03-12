@@ -4,7 +4,7 @@ Create: 08/02/2025
 Description: Encryption, decryption and cryptanalysis function of vigenere cipher
 '''
 # import cryptanalysis util file
-import cryptanalysis as ca
+from . import cryptanalysis as ca
 # string for traversal letters a-z
 import string
 # cartesian product calculation

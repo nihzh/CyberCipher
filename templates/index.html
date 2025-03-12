@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberCipher - Cryptography Tool Set</title>
+    <!-- Bootstrap CSS & Toast CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <style>
+        .cipher-card { display: none; }
+        .cipher-card.active { display: block; }
+        .history-item {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+        .card {
+            background-color: #f0f0f0;
+            border-radius: 15px;
+            border-top: 1px solid #f8f9fa;
+            border-left: 1px solid #f8f9fa;
+            border-right: 2px solid #f8f9fa;
+            border-bottom: 2px solid #f8f9fa;
+        }
+        .btn {
+            border-radius: 10px;
+            border-top: 1px solid lightgray;
+            border-left: 1px solid lightgray;
+            border-right: 2px solid lightgray;
+            border-bottom: 2px solid lightgray;
+        }
+        .form-control, .form-select {
+            border-radius: 10px;
+        }
+        .btn:focus, .btn:active {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+
+        @media (min-width: 992px) and (orientation: landscape) {
+            .main-wrapper {
+                display: flex;
+                gap: 20px;
+            }
+            .tool-section {
+                flex: 2; /* 2/3 width */
+                min-width: 0;
+            }
+            .history-section {
+                flex: 1; /* 1/3 width */
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+<body style="background-color: #e8e8e8">
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand mt-2" href="#"><h4>CyberCipher</h4></a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-lg-center" id="navbarNav">
+                <ul class="text-center navbar-nav mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" data-target="affine">Affine Cipher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-target="caesar">Caesar Cipher</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" data-target="vigenere">Vigenère Cipher</a>
+                    </li>
+                </ul>
+            </div>
+            
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="main-wrapper">
+            <!-- Encryption / Decryption tool -->
+            <div class="tool-section box">
+                <!-- Affine cipher -->
+                <div class="cipher-card active" id="affine">
+                    <div class="card mb-4 border-3 border-light">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4">Affine Cipher</h2>
+
+                            <div class="form-control mb-4" contenteditable="false" style="background-color: #e9ecef;">
+                                <label class="mb-2"><b>Affine cipher</b> is a form substitution cipher that encrypts the numerical value of a letter by performing simple multiplicative and additive equations on it to obtain another letter corresponding to it;</label>
+                                <label class="mb-2"><b>Encryption function</b>: F(x) = (ax + b) (mod m), where a and b are mutually prime and m is the number of letters;</label>
+                                <label class="mb-2"><b>Decryption function</b>: F(x) = a-1(x - b) (mod m), where a-1 is the multiplicative inverse of a in the Zm group and m is the number of letters.</label>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="form-label fs-5">Origin Text</label>
+                                <textarea class="form-control" id="originArea" rows="4"></textarea>
+                            </div>
+        
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label for="key-a" class="form-label">Key A</label>
+                                    <select type="number" class="form-select" id="key-a">
+                                        <option value="" selected>Select...</option>
+                                        {% for num in keyA %}
+                                        <option value="{{ num }}">{{ num }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label for="key-b" class="form-label">Key B (number)</label>
+                                    <input type="number" class="form-control" id="key-b" min="0">
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-4 mb-4">
+                                <button class="btn btn-primary" id="aff-encrypt">Encrypt</button>
+                                <button class="btn btn-outline-primary"  id="aff-rdmkey">Random Encrypt</button>
+                                <button class="btn btn-success" id="aff-decrypt">Decrypt</button>
+                                <button class="btn btn-outline-success" id="aff-analysis">Cryptanalysis</button>
+                            </div>
+        
+                            <div class="mb-3">
+                                <label class="form-label fs-5">Result Text</label>
+                                <textarea class="form-control mb-1" id="resultArea" rows="4" readonly></textarea>
+                                <button class="btn btn-outline-secondary mt-2 copy-btn">Copy Result</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 凯撒密码卡片... -->
+                <div class="cipher-card" id="caesar">
+                    <div class="card mb-4 border-3 border-light">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4">Caesar Cipher</h2>
+                            
+                            <div class="form-control mb-4" contenteditable="false" style="background-color: #e9ecef;">
+                                <label class="mb-2"><b>Caesar cipher</b>, one of the older symmetric encryption system, encrypts and decrypts strings of characters by shifting the letters by a certain amount of digits.</label>
+                                <label class="mb-2">To encrypt, all the letters in the plaintext are shifted backward (or forward) a fixed number of digits in the alphabet and then replaced with the ciphertext, vise versa.</label>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fs-5">Origin Text</label>
+                                <textarea class="form-control" id="originArea" rows="4"></textarea>
+                            </div>
+        
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <label class="form-label">Key (1 letter / number between 0-25)</label>
+                                    <input type="text" class="form-control key-a">
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-4 mb-4">
+                                <button class="btn btn-primary" id="sft-encrypt">Encrypt</button>
+                                <button class="btn btn-outline-primary"  id="sft-rdmkey">Random Encrypt</button>
+                                <button class="btn btn-success" id="sft-decrypt">Decrypt</button>
+                                <button class="btn btn-outline-success" id="sft-analysis">Cryptanalysis</button>
+                            </div>
+        
+                            <div class="mb-3">
+                                <label class="form-label fs-5">Result Text</label>
+                                <textarea class="form-control mb-1" id="resultArea" rows="4" readonly></textarea>
+                                <button class="btn btn-outline-secondary mt-2 copy-btn">Copy Result</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 维吉尼亚密码卡片... -->
+                <div class="cipher-card" id="vigenere">
+                    <div class="card mb-4 border-3 border-light">
+                        <div class="card-body">
+                            <h2 class="card-title mb-4">Vigenère Cipher</h2>
+                            
+                            <div class="form-control mb-4" contenteditable="false" style="background-color: #e9ecef;">
+                                <label class="mb-2"><b>Vigenère cipher</b> is an encryption method based on the Caesar cipher, an encryption algorithm that uses a series of Caesar ciphers to form a cipher alphabet, and belongs to a simple form of multi-table ciphers.</label>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fs-5">Origin Text</label>
+                                <textarea class="form-control" id="originArea" rows="4"></textarea>
+                            </div>
+        
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-8">
+                                    <label class="form-label">Keyword (pure text)</label>
+                                    <input type="text" class="form-control key-a">
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-4 mb-4">
+                                <button class="btn btn-primary" id="vig-encrypt">Encrypt</button>
+                                <button class="btn btn-outline-primary"  id="vig-rdmkey">Random Encrypt</button>
+                                <button class="btn btn-success" id="vig-decrypt">Decrypt</button>
+                                <button class="btn btn-outline-success" id="vig-analysis">Cryptanalysis</button>
+                            </div>
+        
+                            <div class="mb-3">
+                                <label class="form-label fs-5">Result Text</label>
+                                <textarea class="form-control mb-1" id="resultArea" rows="4" readonly></textarea>
+                                <button class="btn btn-outline-secondary mt-2 copy-btn">Copy Result</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- history-section -->
+            <div class="history-section">
+                <div class="card border-3 border-light">
+                    <div class="card-body">
+                        <h5 class="card-title">Encryption / Decryption History</h5>
+                        <div id="historyList" style="max-height: 500px; overflow-y: auto;">
+                            <!-- history list -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Bootstrap JS + jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Toast JS-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // 导航切换
+            $('.nav-link').click(function(e) {
+                e.preventDefault();
+                $('.nav-link').removeClass('active');
+                $(this).addClass('active');
+                $('.cipher-card').hide();
+                $('#' + $(this).data('target')).show();
+            });
+            
+            // copy button
+            $('.copy-btn').click(function() {
+                const text = $(this).prev('textarea').val();
+                navigator.clipboard.writeText(text);
+            });
+
+            // affine cipher: encrpt/decrypt button action
+            $('#aff-encrypt, #aff-decrypt').click(function() {
+                // locate to affine cipher card
+                const card = $(this).closest('.cipher-card');
+                
+                // encrypt or decrypt
+                const actionType = $(this).attr('id') == "aff-encrypt" ? 'enc':'dec';
+
+                // input values
+                const inputText = card.find('#originArea').val();
+                const keyA = parseInt(card.find('#key-a').val());
+                const keyB = parseInt(card.find('#key-b').val());
+
+                if(inputText.length == 0){
+                    toastr.warning("Write something as origin text o.0", "Alert");
+                    return false;
+                }
+
+                // keys validation
+                if(isNaN(keyA) || !isFinite(keyA)){
+                    toastr.warning("Please select a key A!", "Alert");
+                    return false;
+                }
+                if(isNaN(keyB) || !isFinite(keyB)){
+                    toastr.warning("Please input key B with a number!", "Alert");
+                    return false;
+                }
+                console.log(card)
+
+                sendRequest2Keys(inputText, keyA, keyB, "affine", actionType, card)
+            });
+
+            /* TODO sft-encrypt, dec */
+            /* TODO vig-enc, dec */
+            /* TODO rdm enc */
+            /* TODO analysis */
+
+            function addHistory(type, action) {
+                // TODO
+            }
+
+            function sendRequest2Keys(text, keyA, keyB, cipherType, actionType, card){
+                console.log(card)
+                $.ajax({
+                    url: "/" + cipherType + "/" + actionType,
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({text: text, keyA: keyA, keyB: keyB}),
+                    success: function (response) {
+                        // TODO: filter result
+                        card.find('#resultArea').val(response.result);
+                        /* TODO: update session history */
+                        //addHistory(cipherType, isEncrypt ? '加密' : '解密');
+                        toastr.success("Action successed", "Success")
+                    },
+                    error: function() {
+                        toastr.error("Network Error!", "Error");
+                    }
+                })
+            }
+
+            // TODO: sendRequest1Key
+            // TODO: sendRequest0Key
+        });
+    </script>
+</body>
+</html>

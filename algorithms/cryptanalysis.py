@@ -29,9 +29,16 @@ DIGRAMS = ('TH', 'HE', 'IN', 'ER', 'AN', 'RE', 'ED', 'ON', 'ES', 'ST',
 TRIGRAMS = ('THE', 'ING', 'AND', 'HER', 'ERE', 'ENT', 
             'THA', 'NTH', 'WAS', 'ETH', 'FOR', 'DTH')
 
+# affine cipher: multiplicative inverse of modulo 26 (gcd(x, 26) = 1)
+MULTIPLICATIVE_INVERSE = {
+    1:1, 3:9, 5:21, 7:15, 9:3, 11:19,
+    15:7, 17:23, 19:11, 21:5, 23:17, 25:25}
+
+# vigenere cipher: target value of index of coincidence
 INDEX_OF_COINCIDENCE = 1.73
 IDEAL_PROB_DISTRIBUTION = 0.065
 
+# char & number convert
 ASCII_UPPER_A = 65
 ASCII_UPPER_Z = 90
 ASCII_LOWER_A = 97

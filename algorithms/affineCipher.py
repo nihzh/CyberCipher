@@ -4,11 +4,7 @@ Create: 13/1/2024
 Description: Encryption, decryption and cryptanalysis function of affine cipher
 '''
 # import cryptanalysis util file
-import cryptanalysis as ca
-
-MULTIPLICATIVE_INVERSE = {
-    1:1, 3:9, 5:21, 7:15, 9:3, 11:19,
-    15:7, 17:23, 19:11, 21:5, 23:17, 25:25}
+from . import cryptanalysis as ca
 
 # encryption, x * a + b
 def affineEnc(plainText, keya, keyb):
@@ -32,10 +28,10 @@ def affineDec(cipherText, keya, keyb):
     for eachChar in cipherText:
         if eachChar.isupper():
             # minus 65 (ascii A), calculate value and plus 65
-            plainText += chr((ord(eachChar) - ca.ASCII_UPPER_A - keyb) * MULTIPLICATIVE_INVERSE[keya] % 26 + ca.ASCII_UPPER_A)
+            plainText += chr((ord(eachChar) - ca.ASCII_UPPER_A - keyb) * ca.MULTIPLICATIVE_INVERSE[keya] % 26 + ca.ASCII_UPPER_A)
         elif eachChar.islower():
             # minus 97 (ascii a), calculate value and plus 97
-            plainText += chr((ord(eachChar) - ca.ASCII_LOWER_A - keyb) * MULTIPLICATIVE_INVERSE[keya] % 26 + ca.ASCII_LOWER_A)
+            plainText += chr((ord(eachChar) - ca.ASCII_LOWER_A - keyb) * ca.MULTIPLICATIVE_INVERSE[keya] % 26 + ca.ASCII_LOWER_A)
         else:
             # not alpha, copy the origin
             plainText += eachChar
@@ -67,11 +63,11 @@ def keyCalculate(letterA, letterB):
     eLeft = ((ord('T') - ca.ASCII_UPPER_A) - (ord('E') - ca.ASCII_UPPER_A)) % 26
     eRight = (numToT - numToE) % 26
     # calculate solution
-    if eLeft not in MULTIPLICATIVE_INVERSE:
+    if eLeft not in ca.MULTIPLICATIVE_INVERSE:
         return -1, -1
-    keyA = (eRight * MULTIPLICATIVE_INVERSE[eLeft]) % 26
+    keyA = (eRight * ca.MULTIPLICATIVE_INVERSE[eLeft]) % 26
     keyB = (numToE - (ord('E') - 65) * keyA) % 26
-    if keyA not in MULTIPLICATIVE_INVERSE:
+    if keyA not in ca.MULTIPLICATIVE_INVERSE:
         return -1, -1
     return keyA, keyB
 

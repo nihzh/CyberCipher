@@ -4,7 +4,7 @@ Create: 12/17/2024
 Description: Encryption, decryption and cryptanalysis function of shift cipher
 '''
 # import cryptanalysis util file
-import cryptanalysis as ca
+from . import cryptanalysis as ca
 
 # shift cipher: encrypt by key
 def shiftEnc(plainText, key):
