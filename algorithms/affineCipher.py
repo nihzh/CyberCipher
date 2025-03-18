@@ -66,7 +66,7 @@ def keyCalculate(letterA, letterB):
     if eLeft not in ca.MULTIPLICATIVE_INVERSE:
         return -1, -1
     keyA = (eRight * ca.MULTIPLICATIVE_INVERSE[eLeft]) % 26
-    keyB = (numToE - (ord('E') - 65) * keyA) % 26
+    keyB = (numToE - (ord('E') - ca.ASCII_UPPER_A) * keyA) % 26
     if keyA not in ca.MULTIPLICATIVE_INVERSE:
         return -1, -1
     return keyA, keyB
@@ -81,8 +81,8 @@ def affineAnalysis(cipherText):
     plainTexts = []
 
     # take 3 most occourance and all permutations of 3 letters
-    # for a, b in [(0, 1), (1, 0), (1, 2), (2, 1), (0, 2), (2, 0)]:
-    for a, b in [(0, 1), (1, 2), (0, 2)]:
+    for a, b in [(0, 1), (1, 0), (1, 2), (2, 1), (0, 2), (2, 0)]:
+    # for a, b in [(0, 1), (1, 2), (0, 2)]:
         # two lists with same occourance each
         fstOccs = letterOccList[a][1]
         sndOccs = letterOccList[b][1]

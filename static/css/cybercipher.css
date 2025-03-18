@@ -1,0 +1,111 @@
+.cipher-card { display: none; }
+
+.cipher-card.active { display: block; }
+
+.card {
+    background-color: #f0f0f0;
+    border-radius: 15px;
+    border: 2px solid #f8f9fa;
+}
+
+.btn {
+    border-radius: 10px;
+    border: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    border-right: 2px solid lightgray;
+    border-bottom: 2px solid lightgray;
+    transition: background 0.3s;
+}
+
+.form-control, .form-select {
+    border-radius: 10px;
+}
+
+.btn:focus, .btn:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+@media (min-width: 992px) and (orientation: landscape) {
+    .main-wrapper {
+        display: flex;
+        gap: 20px;
+    }
+    .tool-section {
+        flex: 2; /* 2/3 width */
+        min-width: 0;
+    }
+    .history-section {
+        flex: 1; /* 1/3 width */
+        min-width: 0;
+    }
+}
+
+/* History section */
+.history-item {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    padding: 10px;
+    margin-bottom: 8px;
+}
+
+.copy-container {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
+.history-form {
+    padding-bottom: 17px;
+    resize: none;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.history-input {
+    padding-bottom: 10px;
+    padding-right: 55px;
+    resize: none;
+    font-size: 14px;
+}
+
+
+/* copy button */
+.history-copy-btn-bottom {
+    position: absolute;
+    /* top: 0px; */
+    bottom: 0px;
+    right: 0px;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    height: 26px;
+    width: 100%;
+    border-radius: 0px 0px 10px 10px;
+}
+
+.history-copy-btn-right {
+    position: absolute;
+    /* top: 0px; */
+    bottom: 0px;
+    right: 0px;
+    background: rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 5px 10px;
+    font-size: 12px;
+    height: 41px;
+    width: 43px;
+    border-radius: 10px;
+}
+
+.history-copy-btn-bottom:hover, .history-copy-btn-right:hover {
+    background: white !important;
+}
+
+.history-copy-btn-bottom:focus, .history-copy-btn-right:focus {
+    background: rgba(0, 0, 0, 0.1);
+}

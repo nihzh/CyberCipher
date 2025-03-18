@@ -71,7 +71,7 @@ def icCalculate(texts):
     
     # n(n - 1)
     textLength = len(texts)
-    den = textLength * (textLength - 1) / 26
+    den = textLength * (textLength - 1)# / 26
 
     # for each alpha in alphabet (a-z)
     for eachAlpha in string.ascii_lowercase:
@@ -114,7 +114,6 @@ def corrCalculate(pureCipherText, decKey):
     return corr / len(plainText)
 
 
-# 轮询k， 分k（质数）组，每组算delta ic，ic在k的倍数1.73最近
 def vigAnalysis(cipherText):
     # first, determine the keyword length
     # filter the text to pure letter, switch to lower
@@ -123,7 +122,7 @@ def vigAnalysis(cipherText):
     keyICs = {}
 
     # keys with same factor will have similar result, so prime only
-    for tmpKeyLen in [2, 3, 5, 7, 11, 13, 17]:
+    for tmpKeyLen in range(2, min(len(pureLowerText), 15)):
         # cut, calculate each ic, and get avg value
         cuttedStrList = matrixStrCut(pureLowerText, tmpKeyLen)
         cuttedICList = list(map(icCalculate, cuttedStrList))
@@ -131,8 +130,8 @@ def vigAnalysis(cipherText):
         keyICs[tmpKeyLen] = avgIC
 
     # get key length, which ic value nearest to 1.73 (index of coincidence)
-    keyLen = min(keyICs, key = lambda x: abs(keyICs[x] - ca.INDEX_OF_COINCIDENCE))
-
+    keyLen = min(keyICs, key = lambda x: abs(keyICs[x] - ca.IDEAL_PROB_DISTRIBUTION))
+    print(keyLen)
     # second, find the key string, # pi*(fi+g) / n'
     keyStrGuess = []
     # the n'
@@ -147,25 +146,29 @@ def vigAnalysis(cipherText):
             # correlations between decrypted column letter frequencies and the relative letter frequencies
             corr = corrCalculate(eachCut, eachAlpha)
             # corr value tend to regular English, the key is possible
-            if abs(corr - ca.IDEAL_PROB_DISTRIBUTION) <= 0.009:
+            if abs(corr - ca.IDEAL_PROB_DISTRIBUTION) <= 0.012:
                 cuttedKeyGuess += chr(eachAlpha + ca.ASCII_LOWER_A)
         # record the key that nearest to 0.065 (ideal probability distribution)
         # keyStr += min(corrs, key = lambda x: abs(corrs[x] - ca.IDEAL_PROB_DISTRIBUTION))
         keyStrGuess.append(cuttedKeyGuess)
 
     # third, plain text recovery
+    plainText = ""
     # make certesian product for each cutted key guess, as possible keys
     certesianProduct = list(product(*keyStrGuess))
     possibleKeys = ["".join(pair) for pair in certesianProduct]
 
+    print(keyStrGuess)
     # for each possible keys, take plain text and check if it is rational English
-    possiblePlainText = []
+    matchingDict = {}
     for eachKey in possibleKeys:
-        plainText = vigDec(cipherText, eachKey)
-        # find correlation value (no shift)
-        corr = corrCalculate(plainText, 0)
-        # keep the answer if it similar to regular English
-        if abs(corr - ca.IDEAL_PROB_DISTRIBUTION) <= 0.009:
-            possiblePlainText.append(plainText)
+        possPlainText = vigDec(cipherText, eachKey)
+        digramCount = ca.getDigramsInTextCount(possPlainText)
+        trigramCount = ca.getTrigramsInTextCount(possPlainText)
+        matchingDict[eachKey] = digramCount + trigramCount
     
-    return possiblePlainText
+    if len(matchingDict) != 0:
+        key = max(matchingDict, key = matchingDict.get)
+        plainText = vigDec(cipherText, key)
+    
+    return plainText

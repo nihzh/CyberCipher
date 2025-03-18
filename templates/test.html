@@ -9,39 +9,138 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <style>
+        .history-item {
+            background-color: #989a9c;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .copy-container {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* 文本框样式 */
+        .history-form {
+            padding-bottom: 10px;
+            resize: none;
+            
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .history-input {
+            padding-bottom: 9px;
+            padding-right: 55px;
+            resize: none;
+        }
+
+        /* 复制按钮样式 */
+        .copy-btn {
+            position: absolute;
+            /* top: 0px; */
+            bottom: 0px;
+            right: 0px;
+            background: rgba(0, 0, 0, 0.1);
+            border: none;
+            padding: 5px 10px;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .copy-btn-bottom {
+            height: 30px;
+            width: 100%;
+            border-radius: 0px 0px 15px 15px;
+        }
+
+        .copy-btn-right {
+            height: 41px;
+            border-radius: 15px;
+        }
+    </style>
 </head>
 <body>
 
-<button id="showToastAlert">显示提醒</button>
-<button id="showModalAlert" class="btn btn-primary">显示提醒</button>
+    <div class="history-item container mt-3">
+        <div class="row mx-2 mt-1">
+            <div class="col-6">
+                <h4 class="text-left">Affine - enc</h4>
+            </div>
+            <div class="col-6 text-end">
+                <p class="text-muted">2025-03-12 18:42:32</p>
+            </div>
+        </div>
+    
+        <div class="d-flex justify-content-center">
+            <div class="row mx-2">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="origin-text">Origin Text</label>
+                        <div class="copy-container">
+                            <textarea id="origin-text" class="form-control history-form" rows="4" readonly></textarea>
+                            <button class="btn btn-secondary btn-sm btn-light copy-btn history-copy-btn-bottom">Copy</button>
+                        </div>
+                        
+                    </div>
+                </div>
 
-<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="alertModalLabel">提醒</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        这是一个自定义的 Bootstrap 提醒框！
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
-      </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="key-a">Key A</label>
+                        <div class="copy-container">
+                            <input type="number" id="key-a" class="form-control history-input" readonly>
+                            <button class="btn btn-secondary btn-light copy-btn history-copy-btn-right">Copy</button>
+                        </div>
+                        
+                    </div>
+                    <div class="form-group mt-2">
+                        <label for="key-b">Key B</label>
+                        <div class="copy-container">
+                            <input type="number" id="key-b" class="form-control history-input" readonly>
+                            <button class="btn btn-secondary btn-light copy-btn history-copy-btn-right">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="result-text">Result Text</label>
+                        <div class="copy-container">
+                            <textarea id="result-text" class="form-control history-form" rows="4" readonly></textarea>
+                            <button class="btn btn-secondary btn-light copy-btn history-copy-btn-bottom">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
-
-<script>
-    $(document).ready(function() {
-        $("#showModalAlert").click(function() {
-            $("#alertModal").modal("show");
+    
+    <textarea class="form-control form-control-sm" rows="3">小尺寸文本框</textarea>
+    <textarea class="form-control form-control-lg" rows="3">大尺寸文本框</textarea>
+    <script>
+        function copyToClipboard() {
+            let inputField = document.getElementById("copy-text");
+            navigator.clipboard.writeText(inputField.value).then(() => {
+                alert("已复制: " + inputField.value);
+            }).catch(err => {
+                console.error("复制失败: ", err);
+            });
+        }
+        $(document).ready(function(){
+            console.log('a'.charCodeAt());
         });
-        $("#showToastAlert").click(function() {
-            toastr.success("这是一个 Toastr 提醒框！", "提醒");
-        });
-    });
-</script>
+    </script>
+    
 
 </body>
 </html>
