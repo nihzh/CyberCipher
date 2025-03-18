@@ -131,7 +131,7 @@ def vigAnalysis(cipherText):
 
     # get key length, which ic value nearest to 1.73 (index of coincidence)
     keyLen = min(keyICs, key = lambda x: abs(keyICs[x] - ca.IDEAL_PROB_DISTRIBUTION))
-    print(keyLen)
+    # print(keyLen)
     # second, find the key string, # pi*(fi+g) / n'
     keyStrGuess = []
     # the n'
@@ -158,7 +158,7 @@ def vigAnalysis(cipherText):
     certesianProduct = list(product(*keyStrGuess))
     possibleKeys = ["".join(pair) for pair in certesianProduct]
 
-    print(keyStrGuess)
+    # print(keyStrGuess)
     # for each possible keys, take plain text and check if it is rational English
     matchingDict = {}
     for eachKey in possibleKeys:
