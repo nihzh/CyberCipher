@@ -1,5 +1,7 @@
 $(document).ready(function() {
-    refreshHistory()
+    refreshHistory();
+    const inactivityTime = 5 * 60 * 1000;  // inactivity time for clearing session, in ms
+    let timeout;
 
     // navigation switching
     $('.nav-link').click(function(e) {
@@ -12,7 +14,7 @@ $(document).ready(function() {
     });
 
     // copy button
-    $('.copy-btn').click(function() {
+    $('#main-area').on("click", ".copy-btn", function() {
         const textElement = $(this).prev('input, textarea');
         navigator.clipboard.writeText(textElement.val());
         toastr.info("Result copied", "Info");
@@ -41,7 +43,7 @@ $(document).ready(function() {
             return false;
         }
 
-        const INVERSE = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25]
+        const INVERSE = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25];
         // keys validation
         // keya: is number and included in INVERSE list (relatively prime with 26)
         if(isNaN(keyA) || !isFinite(keyA) || !INVERSE.includes(keyA)){
@@ -54,7 +56,7 @@ $(document).ready(function() {
             return false;
         }
 
-        sendRequest2Keys(inputText, keyA, keyB, "affine", actionType, card)
+        sendRequest2Keys(inputText, keyA, keyB, "affine", actionType, card);
     });
 
     // shift cipher: encrpt/decrypt button action
@@ -81,14 +83,14 @@ $(document).ready(function() {
         // is a pure letter
         else if(/^[A-Za-z]{1}$/.test(keyA) && keyA.length == 1){
             // 97: lower a in ascii
-            keyA = keyA.toLowerCase().charCodeAt(0) - 97
+            keyA = keyA.toLowerCase().charCodeAt(0) - 97;
         }
         else{
             toastr.warning("The key must be one number or one letter!", "Alert");
             return false;
         }
 
-        sendRequest2Keys(inputText, keyA, null, "shift", actionType, card)
+        sendRequest2Keys(inputText, keyA, null, "shift", actionType, card);
     });
 
     // vigenere cipher: encrpt/decrypt button action
@@ -110,11 +112,11 @@ $(document).ready(function() {
 
         // The key must be pure letters
         if(!/^[A-Za-z]+$/.test(keyA)){
-            toastr.warning("The key must be pure letters", "Alert");
+            toastr.warning("The key must be pure alphabet letters", "Alert");
             return false;
         }
 
-        sendRequest2Keys(inputText, keyA, null, "vigenere", actionType, card)
+        sendRequest2Keys(inputText, keyA, null, "vigenere", actionType, card);
     });
 
     // random key encryption
@@ -142,26 +144,25 @@ $(document).ready(function() {
         sendRequest0Key(inputText, cipherType, "anldec", card);
     });
 
-    function showHistory() {
-        // TODO
-    }
 
     function sendRequest2Keys(originText, keyA, keyB, cipherType, actionType, card){
+        const csrfToken = $('meta[name="csrf-token"]').attr('content')
         $.ajax({
             url: "/" + cipherType + "/" + actionType,
             type: "POST",
             contentType: "application/json",
-            // TODO: encode strintify
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
             data: JSON.stringify({text: originText, keyA: keyA, keyB: keyB}),
             success: function (response) {
-                // TODO: decode result
                 resultText = response.result;
                 if(response.result != null){
                     card.find('#resultArea').val(response.result);  
                 }
-                /* TODO: update session history */
+                console.log(keyA)
                 addHistory(originText, keyA, keyB, resultText, actionType, cipherType, moment().format("YYYY-MM-DD HH:mm:ss"))
-                toastr.success("Action successed", "Success");
+                toastr.success("Action Successed", "Success");
             },
             error: function() {
                 toastr.error("Network Error!", "Error");
@@ -170,14 +171,16 @@ $(document).ready(function() {
     }
 
     function sendRequest0Key(originText, cipherType, actionType, card){
+        const csrfToken = $('meta[name="csrf-token"]').attr('content')
         $.ajax({
             url: "/" + cipherType + "/" + actionType,
             type: "POST",
             contentType: "application/json",
-            // TODO: encode strintify
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
             data: JSON.stringify({text: originText}),
             success: function (response) {
-                // TODO: decode result
                 resultText = response.result;
                 keyA = response.keyA || null;
                 keyB = response.keyB || null;
@@ -196,10 +199,13 @@ $(document).ready(function() {
                     card.find('#key-b').val(response.keyB);
                 }
                 addHistory(originText, keyA, keyB, resultText, actionType, cipherType, moment().format("YYYY-MM-DD HH:mm:ss"))
-                toastr.success("Action successed", "Success")
+                toastr.success("Action Successed", "Success")
             },
             error: function() {
                 toastr.error("Network Error!", "Error");
+            },
+            falure: function(){
+                toastr.error("Illegal Input!", "Error");
             }
         })
     }
@@ -212,15 +218,16 @@ $(document).ready(function() {
             originText: originText,
             resultText: resultText,
             keyA: keyA,
-            keyB: keyB ?? null,
+            keyB: keyB ?? "",
             actionType: actionType,
             cipherType: cipherType,
             timestamp: timestamp || moment().format("YYYY-MM-DD HH:mm:ss")
         };
         // add record into list
         history.push(newRecord);
-        // put into session
+        // put into session, reset session timer
         sessionStorage.setItem("cipherHistory", JSON.stringify(history));
+        resetTimer()
         // refresh list
         refreshHistory();
     }
@@ -248,7 +255,7 @@ $(document).ready(function() {
                 case "rdmenc":
                     actionType = "Random Encrypt";
                     break;
-                case "analysis":
+                case "anldec":
                     actionType = "Cryptanalysis";
                     break;
                 default:
@@ -298,7 +305,7 @@ $(document).ready(function() {
                             <div class="form-group">
                                 <label for="history-key-a" class="ms-1"><small>Key A</small></label>
                                 <div class="copy-container">
-                                    <input type="number" id="history-key-a" class="form-control history-input" value="${record.keyA}" readonly>
+                                    <input type="text" id="history-key-a" class="form-control history-input" value="${record.keyA}" readonly>
                                     <button class="btn btn-secondary btn-light copy-btn history-copy-btn-right">
                                         <i class="bi bi-clipboard"></i>
                                     </button>
@@ -308,7 +315,7 @@ $(document).ready(function() {
                             <div class="form-group mt-2">
                                 <label for="history-key-b" class="ms-1"><small>Key B</small></label>
                                 <div class="copy-container">
-                                    <input type="number" id="history-key-b" class="form-control history-input" value="${record.keyB}" readonly>
+                                    <input type="text" id="history-key-b" class="form-control history-input" value="${record.keyB}" readonly>
                                     <button class="btn btn-secondary btn-light copy-btn history-copy-btn-right">
                                         <i class="bi bi-clipboard"></i>
                                     </button>
@@ -337,5 +344,10 @@ $(document).ready(function() {
         sessionStorage.clear();
         refreshHistory();
         toastr.info("Record cleared", "History");
+    }
+
+    function resetTimer() {
+        clearTimeout(timeout);
+        timeout = setTimeout(clearSession, inactivityTime);
     }
 });

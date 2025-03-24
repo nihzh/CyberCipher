@@ -163,10 +163,12 @@ def vigAnalysis(cipherText):
     matchingDict = {}
     for eachKey in possibleKeys:
         possPlainText = vigDec(cipherText, eachKey)
+        # store the sum number of digrams and trigrams
         digramCount = ca.getDigramsInTextCount(possPlainText)
         trigramCount = ca.getTrigramsInTextCount(possPlainText)
         matchingDict[eachKey] = digramCount + trigramCount
     
+    # get max matching key as result
     if len(matchingDict) != 0:
         key = max(matchingDict, key = matchingDict.get)
         plainText = vigDec(cipherText, key)
