@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <!-- personalized adjustment CSS -->
-    <link rel="stylesheet" href="/static/css/cybercipher.css"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cybercipher.css') }}"/>
     <link rel="icon" href="{{ url_for('static', filename='letter_c_icon_square.ico') }}">
 <body style="background-color: #e8e8e8">
     <!-- Navigation bar -->
@@ -201,6 +201,6 @@
     <!-- Toast JS and Moment JS-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
-    <script src="/static/js/cybercipher.js"></script>
+    <script src="{{ url_for('static', filename='js/cybercipher.js') }}"></script>
 </body>
 </html>
