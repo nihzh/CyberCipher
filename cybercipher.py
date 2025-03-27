@@ -270,9 +270,9 @@ def vigenere_anldec():
     return jsonify({"status":"success", "result": plainText})
 
 
-@app.route('/test')
-def test():
-    return render_template("test.html")
+# @app.route('/test')
+# def test():
+#     return render_template("test.html")
 
 if __name__ == '__main__':
     app.run(debug = True)
