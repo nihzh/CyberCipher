@@ -203,9 +203,6 @@ $(document).ready(function() {
             },
             error: function() {
                 toastr.error("Network Error!", "Error");
-            },
-            falure: function(){
-                toastr.error("Illegal Input!", "Error");
             }
         })
     }
