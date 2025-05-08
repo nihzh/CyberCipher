@@ -1,14 +1,14 @@
-# # import affineCipher
-# # import shiftCipher
-# from algorithms import vigenereCipher
-# from algorithms import cryptanalysis
+from algorithms import affineCipher
+from algorithms import shiftCipher
+from algorithms import vigenereCipher
+from algorithms import cryptanalysis
 
 
 # text = """l qhhg d orqjhu whaw ilhog wr whvw wkh fubswdqdobvlv ixqfwlrq ri pb surjudp, lw lv ixoob zulwwhq eb pbvhoi dqg l wklqn lw zloo eh juhdw"""
 # # print(shiftAnalysis(text))
 # # print(shiftDec(shiftEnc("byd", 55), 55))
 
-
+print(vigenereCipher.vigAnalysis("a"))
 
 # # print(affineEnc("This is my first affine cryptoanalysis text, I think it absolutely will not run properly, but it is a good begin.", 3, 5))
 # # print(affineCipher.affineDec("Kadh dh pz udehk fuudsr lezykvfsfmzhdh krwk, D kadsj dk fihvmnkrmz tdmm svk ens yevyremz, ink dk dh f xvvo irxds.", 3, 5))
@@ -117,42 +117,3 @@
 #             outputText += f'Result {text}: {{"{index}"}}\n'
 #         plainText = outputText
 # print(plainText)
-from collections import defaultdict
-# recieve a string, return a dict that indicates frequency of occurrence of each letter 
-def getLetterOccDict(text):
-    # check for empty string
-    if len(text) == 0:
-        return dict()
-    
-    letterOccDict = {}
-
-    # check each letter in the string
-    for eachLetter in text:
-        # only process alpha letters
-        if not eachLetter.isalpha() and isinstance(eachLetter, str) and len(eachLetter) == 1:
-            continue
-        # set uppercase for counting
-        eachLetter = eachLetter.upper()
-        # not existed in dict, create
-        if letterOccDict.get(eachLetter) == None:
-            letterOccDict[eachLetter] = 0
-        # plus the count
-        letterOccDict[eachLetter] += 1
-
-    # rank by frequency
-    # rankedLetterOcc = sorted(letterOccDict.items(), key=lambda x:x[1], reverse = True)
-
-    return letterOccDict
-
-# return a list of tuple (int, list) which are a list of letters and corresponding occourance times in given text
-def getGroupedRankedOccList(text):
-    letterOcc = getLetterOccDict(text)
-    # grouping by value (occourance times)
-    groupedList = defaultdict(list)
-    for letter, occ in letterOcc.items():
-        groupedList[occ].append(letter)
-    # rank the list
-    sortedGroups = sorted(groupedList.items(), key=lambda x: x[0], reverse=True)
-    return sortedGroups
-
-print(getGroupedRankedOccList("aabsbdierhnasopbipqwendibwoegjj"))

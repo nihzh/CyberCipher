@@ -186,7 +186,7 @@ $(document).ready(function() {
                 keyB = response.keyB || null;
 
                 if(response.result.length == 0){
-                    card.find('#resultArea').val("**Failed, the text may not long enough for analysis.**");
+                    card.find('#resultArea').val("**Failed, the text may not conditioned for analysis.**");
                 }
                 else{
                     card.find('#resultArea').val(response.result);

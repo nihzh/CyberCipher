@@ -80,6 +80,9 @@ def affineAnalysis(cipherText):
     matchingDict = {}
     plainTexts = []
 
+    if len(letterOccList) < 3:
+        return []
+    
     # take 3 most occourance and all permutations of 3 letters
     for a, b in [(0, 1), (1, 0), (1, 2), (2, 1), (0, 2), (2, 0)]:
     # for a, b in [(0, 1), (1, 2), (0, 2)]:
@@ -98,6 +101,9 @@ def affineAnalysis(cipherText):
                 triCount = ca.getTrigramsInTextCount(tempPlain)
                 # record keys and the scounting result
                 matchingDict[(keyA, keyB)] = diCount + triCount
+
+    if len(matchingDict) == 0:
+        return []
 
     # take the largest count of digrams and trigrams, take result and return
     maxMatching = max(matchingDict.values())

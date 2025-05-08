@@ -121,6 +121,9 @@ def vigAnalysis(cipherText):
     # calculate index of coincidence for each possible key length
     keyICs = {}
 
+    if len(pureLowerText) <= 3:
+        return ""
+
     # keys with same factor will have similar result, so prime only
     for tmpKeyLen in range(2, min(len(pureLowerText), 15)):
         # cut, calculate each ic, and get avg value
@@ -146,7 +149,7 @@ def vigAnalysis(cipherText):
             # correlations between decrypted column letter frequencies and the relative letter frequencies
             corr = corrCalculate(eachCut, eachAlpha)
             # corr value tend to regular English, the key is possible
-            if abs(corr - ca.IDEAL_PROB_DISTRIBUTION) <= 0.012:
+            if abs(corr - ca.IDEAL_PROB_DISTRIBUTION) <= 0.008:
                 cuttedKeyGuess += chr(eachAlpha + ca.ASCII_LOWER_A)
         # record the key that nearest to 0.065 (ideal probability distribution)
         # keyStr += min(corrs, key = lambda x: abs(corrs[x] - ca.IDEAL_PROB_DISTRIBUTION))

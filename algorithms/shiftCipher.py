@@ -49,6 +49,9 @@ def shiftAnalysis(cipherText):
     keyMatching = {}
     plainTexts = []
 
+    if len(letterOccList) < 3:
+        return []
+
     # get first 3 occourence letter group, try 'E'
     mostOcc3 = letterOccList[0][1] + letterOccList[1][1]+letterOccList[2][1]
     for eachLetter in mostOcc3:
